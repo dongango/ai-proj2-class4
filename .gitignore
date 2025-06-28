@@ -8,3 +8,11 @@ anaconda-projects/
 # 파이썬 캐시 파일
 __pycache__/
 *.pyc
+
+# CSV 파일 무시
+*.csv
+
+# Excel 파일 무시 (xlsx, xls, xlsm 등)
+*.xls
+*.xlsx
+*.xlsm
