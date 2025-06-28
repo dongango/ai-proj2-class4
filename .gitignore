@@ -1,0 +1,21 @@
+# Jupyter Notebook 체크포인트 제거
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Anaconda 환경 파일 제거
+anaconda-projects/
+
+# 파이썬 캐시 파일
+__pycache__/
+*.pyc
+
+# CSV 파일 무시
+*.csv
+
+# Excel 파일 무시 (xlsx, xls, xlsm 등)
+*.xls
+*.xlsx
+*.xlsm
+
+# macOS 메타파일 무시
+._*
