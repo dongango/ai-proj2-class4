@@ -16,3 +16,6 @@ __pycache__/
 *.xls
 *.xlsx
 *.xlsm
+
+# macOS 메타파일 무시
+._*
