@@ -1,0 +1,10 @@
+# Jupyter Notebook 체크포인트 제거
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Anaconda 환경 파일 제거
+anaconda-projects/
+
+# 파이썬 캐시 파일
+__pycache__/
+*.pyc
