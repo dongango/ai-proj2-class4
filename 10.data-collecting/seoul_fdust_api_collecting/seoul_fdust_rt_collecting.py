@@ -1,7 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[4]:
+# In[ ]:
+
+
+## docker image 용으로 전환하는 코드..
+# jupyter nbconvert --to script 서울시\ 미세먼지\ 실시간\ 수집\ 모듈.ipynb
+
+# In[87]:
 
 
 import pandas as pd
@@ -23,7 +29,7 @@ engine = create_engine(f"mysql+pymysql://{user}:{password}@{host}:{port}/{databa
 
 
 
-# In[ ]:
+# In[88]:
 
 
 # 마지막 데이타 수집일을 가져옴..
@@ -34,8 +40,7 @@ def get_latest_datetime():
         row = result.fetchone()
         return row[0] if row and row[0] else datetime.datetime(2024, 1, 1)
 
-
-# In[16]:
+# In[89]:
 
 
 # 날짜 기준 미세먼지, 오염데이타 수집.
@@ -52,8 +57,7 @@ def fetch_air_data(ymd):
         print(f"Error: {response.status_code}")
         return None
 
-
-# In[68]:
+# In[90]:
 
 
 ## 수집한 XML 데이타를 시간별 미세면지, 오염물질 데이타를 가져온다.
@@ -104,8 +108,7 @@ def parse_air_data(xml):
 
     return quality_list, pollution_list
 
-
-# In[61]:
+# In[91]:
 
 
 def save_to_db(quality_list, pollution_list):
@@ -130,18 +133,17 @@ def save_to_db(quality_list, pollution_list):
                     o3  = VALUES(o3)
             """), item)
 
-
-# In[ ]:
+# In[95]:
 
 
 import datetime
+import time
 
 last_dt = get_latest_datetime()
 today = datetime.datetime.now().date()
 current_date = last_dt.date()
-current_date += datetime.timedelta(days=1)
 
-print("start date : ", current_date)
+print("start date : ", current_date, " / ", today)
 
 while current_date <= today:
     ymd = current_date.strftime("%Y%m%d")

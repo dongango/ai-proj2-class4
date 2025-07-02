@@ -8,6 +8,8 @@ spec:
     spec:
       template:
         spec:
+          nodeSelector:
+            node-role: worker   # 이 라벨을 가진 노드에서만 실행
           containers:
             - name: seoul-fdust-collect
               image: harbor.dongango.com/aiclass4/tensorflow:2.12
