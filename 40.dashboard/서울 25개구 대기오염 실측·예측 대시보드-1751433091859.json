@@ -1,0 +1,578 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 2,
+  "links": [],
+  "panels": [
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "**📌 기준 날짜:** ${latest_date}",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.0.2",
+      "title": "",
+      "type": "text"
+    },
+    {
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 5,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "📍 현재 위치: **${region}**\n\n- PM10 평균 농도: **${avg_pm10} ㎍/㎥** → 상태: **${pm10_level}**  \n- PM2.5 평균 농도: **${avg_pm25} ㎍/㎥** → 상태: **${pm25_level}**\n\n---\n\n🩺 건강 안내:\n\n${risk_comment}",
+        "mode": "markdown"
+      },
+      "pluginVersion": "12.0.2",
+      "title": "",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "ceq7dvm1oan7kd"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "농도 (μg/m³)",
+            "axisPlacement": "left",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 1,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 3
+      },
+      "id": 2,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "fullHighlight": false,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "region",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "ai2class4",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  region,\n  ROUND(AVG(pm10), 1) AS avg_pm10,\n  ROUND(AVG(pm25), 1) AS avg_pm25,\n  CASE \n    WHEN AVG(pm10) > 50 OR AVG(pm25) > 25 THEN '🚨 위험'\n    ELSE '✅ 양호'\n  END AS risk_level\nFROM air_quality\nWHERE DATE(datetime) = (\n    SELECT DATE(MAX(datetime)) FROM air_quality\n)\nGROUP BY region\nORDER BY avg_pm10 DESC\nLIMIT 5;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "미세먼지 상위 5개 구",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "ceq7dvm1oan7kd"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            },
+            "inspect": false
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#aaaaaa"
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pm10_change_percent"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "#969696"
+                    },
+                    {
+                      "color": "#EAB839",
+                      "value": -10
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "pm25_change_percent"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "#969696"
+                    },
+                    {
+                      "color": "#EAB839",
+                      "value": -10
+                    },
+                    {
+                      "color": "red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 3
+      },
+      "id": 4,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {
+          "countRows": false,
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "pm10_change_percent"
+          }
+        ]
+      },
+      "pluginVersion": "12.0.2",
+      "targets": [
+        {
+          "dataset": "ai2class4",
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT\n  t.region,\n  t.today_pm10,\n  y.yesterday_pm10,\n  ROUND((t.today_pm10 - y.yesterday_pm10) / NULLIF(y.yesterday_pm10, 0) * 100, 1) AS pm10_change_percent,\n  t.today_pm25,\n  y.yesterday_pm25,\n  ROUND((t.today_pm25 - y.yesterday_pm25) / NULLIF(y.yesterday_pm25, 0) * 100, 1) AS pm25_change_percent\nFROM\n  (\n    SELECT region,\n           ROUND(AVG(pm10), 1) AS today_pm10,\n           ROUND(AVG(pm25), 1) AS today_pm25\n    FROM air_quality\n    WHERE DATE(datetime) = CURDATE()\n    GROUP BY region\n  ) t\nJOIN\n  (\n    SELECT region,\n           ROUND(AVG(pm10), 1) AS yesterday_pm10,\n           ROUND(AVG(pm25), 1) AS yesterday_pm25\n    FROM air_quality\n    WHERE DATE(datetime) = CURDATE() - INTERVAL 1 DAY\n    GROUP BY region\n  ) y\nON t.region = y.region\nORDER BY pm10_change_percent DESC;\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "전일 대비 미세먼지 변화량",
+      "type": "table"
+    },
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "ceq7dvm1oan7kd"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.0.2",
+      "repeat": "region",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "dataset": "ai2class4",
+          "datasource": {
+            "type": "mysql",
+            "uid": "ceq7dvm1oan7kd"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT \n  datetime,\n  pm10 AS measured_pm10,\n  pm25 AS measured_pm25\nFROM air_quality\nWHERE region = [[region]]\nORDER BY datetime;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        },
+        {
+          "dataset": "ai2class4",
+          "datasource": {
+            "type": "mysql",
+            "uid": "ceq7dvm1oan7kd"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "hide": false,
+          "rawQuery": true,
+          "rawSql": "SELECT \n  datetime,\n  pm10 AS predicted_pm10,\n  pm25 AS predicted_pm25\nFROM air_quality_pred\nWHERE region = [[region]]\nORDER BY datetime;\n",
+          "refId": "B",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "📊 ${region} 미세먼지 추이 및 예측",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "2025-07-02",
+          "value": "2025-07-02"
+        },
+        "definition": "SELECT DATE_FORMAT(MAX(datetime), '%Y-%m-%d') FROM air_quality",
+        "name": "latest_date",
+        "options": [],
+        "query": "SELECT DATE_FORMAT(MAX(datetime), '%Y-%m-%d') FROM air_quality",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "강남구",
+          "value": "강남구"
+        },
+        "definition": "SELECT DISTINCT region FROM air_quality ORDER BY region;",
+        "includeAll": true,
+        "name": "region",
+        "options": [],
+        "query": "SELECT DISTINCT region FROM air_quality ORDER BY region;",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "definition": "SELECT ROUND(AVG(pm10), 1)\nFROM air_quality\nWHERE DATE(datetime) = CURDATE()\n  AND region = '${region}'",
+        "name": "avg_pm10",
+        "options": [],
+        "query": "SELECT ROUND(AVG(pm10), 1)\nFROM air_quality\nWHERE DATE(datetime) = CURDATE()\n  AND region = '${region}'",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "definition": "SELECT\n  CASE\n    WHEN AVG(pm10) <= 30 THEN '좋음 😊'\n    WHEN AVG(pm10) <= 50 THEN '보통 🙂'\n    WHEN AVG(pm10) <= 100 THEN '나쁨 😷'\n    ELSE '매우 나쁨 🚨'\n  END\nFROM air_quality\nWHERE DATE(datetime) = CURDATE()\n  AND region = '${region}'",
+        "name": "pm10_level",
+        "options": [],
+        "query": "SELECT\n  CASE\n    WHEN AVG(pm10) <= 30 THEN '좋음 😊'\n    WHEN AVG(pm10) <= 50 THEN '보통 🙂'\n    WHEN AVG(pm10) <= 100 THEN '나쁨 😷'\n    ELSE '매우 나쁨 🚨'\n  END\nFROM air_quality\nWHERE DATE(datetime) = CURDATE()\n  AND region = '${region}'",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "definition": "SELECT ROUND(AVG(pm25), 1)\nFROM air_quality\nWHERE DATE(datetime) = CURDATE()\n  AND region = '${region}'",
+        "name": "avg_pm25",
+        "options": [],
+        "query": "SELECT ROUND(AVG(pm25), 1)\nFROM air_quality\nWHERE DATE(datetime) = CURDATE()\n  AND region = '${region}'",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "definition": "SELECT\n  CASE\n    WHEN AVG(pm25) <= 15 THEN '좋음 😊'\n    WHEN AVG(pm25) <= 25 THEN '보통 🙂'\n    WHEN AVG(pm25) <= 50 THEN '나쁨 😷'\n    ELSE '매우 나쁨 🚨'\n  END\nFROM air_quality\nWHERE DATE(datetime) = CURDATE()\n  AND region = '${region}'",
+        "name": "pm25_level",
+        "options": [],
+        "query": "SELECT\n  CASE\n    WHEN AVG(pm25) <= 15 THEN '좋음 😊'\n    WHEN AVG(pm25) <= 25 THEN '보통 🙂'\n    WHEN AVG(pm25) <= 50 THEN '나쁨 😷'\n    ELSE '매우 나쁨 🚨'\n  END\nFROM air_quality\nWHERE DATE(datetime) = CURDATE()\n  AND region = '${region}'",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "description": "SELECT\n  CASE\n    WHEN GREATEST(\n      CASE WHEN AVG(pm10) <= 30 THEN 1\n           WHEN AVG(pm10) <= 50 THEN 2\n           WHEN AVG(pm10) <= 100 THEN 3\n           ELSE 4\n      END,\n      CASE WHEN AVG(pm25) <= 15 THEN 1\n           WHEN AVG(pm25) <= 25 THEN 2\n           WHEN AVG(pm25) <= 50 THEN 3\n           ELSE 4\n      END\n    ) = 1 THEN '좋음: 마음껏 활동하세요! ☀️'\n    WHEN GREATEST(...) = 2 THEN '보통: 민감군은 주의하세요. 😐'\n    ELSE '나쁨 이상: 외출 시 마스크 착용을 권장합니다. 😷'\n  END\nFROM air_quality\nWHERE DATE(datetime) = CURDATE()\n  AND region = '${region}'\nSELECT\n  CASE\n    WHEN GREATEST(\n      CASE \n        WHEN AVG(pm10) <= 30 THEN 1\n        WHEN AVG(pm10) <= 50 THEN 2\n        WHEN AVG(pm10) <= 100 THEN 3\n        ELSE 4\n      END,\n      CASE \n        WHEN AVG(pm25) <= 15 THEN 1\n        WHEN AVG(pm25) <= 25 THEN 2\n        WHEN AVG(pm25) <= 50 THEN 3\n        ELSE 4\n      END\n    ) = 1 THEN '좋음: 마음껏 활동하세요! ☀️'\n    \n    WHEN GREATEST(\n      CASE \n        WHEN AVG(pm10) <= 30 THEN 1\n        WHEN AVG(pm10) <= 50 THEN 2\n        WHEN AVG(pm10) <= 100 THEN 3\n        ELSE 4\n      END,\n      CASE \n        WHEN AVG(pm25) <= 15 THEN 1\n        WHEN AVG(pm25) <= 25 THEN 2\n        WHEN AVG(pm25) <= 50 THEN 3\n        ELSE 4\n      END\n    ) = 2 THEN '보통: 민감군은 주의하세요. 😐'\n\n    ELSE '나쁨 이상: 외출 시 마스크 착용을 권장합니다. 😷'\n  END AS risk_comment\nFROM air_quality\nWHERE DATE(datetime) = CURDATE()\n  AND region = '${region}';\n",
+        "name": "risk_comment",
+        "options": [],
+        "query": "",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "서울 25개구 대기오염 실측·예측 대시보드",
+  "uid": "2788f451-5c43-48da-8ea8-0b112246bb35",
+  "version": 19
+}

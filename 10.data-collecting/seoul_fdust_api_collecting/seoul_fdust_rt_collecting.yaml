@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: seoul-fdust-collect-job
+spec:
+  schedule: "10,40 * * * *"  # 매시 10분, 40분 실행
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          nodeSelector:
+            node-role: worker   # 이 라벨을 가진 노드에서만 실행
+          containers:
+            - name: seoul-fdust-collect
+              image: harbor.dongango.com/aiclass4/tensorflow:2.12
+              command: ["python", "seoul_fdust_rt_collecting.py"]
+              volumeMounts:
+                - name: script-volume
+                  mountPath: /app/seoul_fdust_rt_collecting.py
+                  subPath: seoul_fdust_rt_collecting.py
+                - name: config-volume
+                  mountPath: /app/db-config.json
+                  subPath: db-config.json
+              workingDir: /app
+          restartPolicy: OnFailure
+          volumes:
+            - name: script-volume
+              configMap:
+                name: seoul-fdust-script
+            - name: config-volume
+              configMap:
+                name: db-config
