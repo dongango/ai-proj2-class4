@@ -62,3 +62,20 @@ PM10 RMSE: 25~35 정도, PM25 RMSE: 12~17 정도
 - feature_cols = ['aod_avg', 'wind_speed', 'precipitation']
 
 - RMSE 외에 MAE, MAPE, R² 등도 고려해보기
+
+##3차 모델
+- 피처 수 줄임
+- feature_cols = ['aod_avg', 'wind_speed', 'precipitation']
+
+현재 문제점
+- 고농도 예측은 잡아내지 못함, 일반적인 평균값만 맞추고 있음
+- 설명력 낮음
+
+향후 방향
+- 2단계 LSTM 구조 도입
+- 노드 수를 늘려서 모델 용량 증가
+- drop out 추가
+
+- 입력 피처를 다시 추가? / 이상치 구간 로그 변환?
+- RobustScaler 시도
+
