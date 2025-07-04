@@ -1,0 +1,35 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: air-pollution-prediction
+spec:
+  schedule: "30 0 * * *"  # 매일 0시 30분 실행
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          nodeSelector:
+            node-role.kubernetes.io/worker: "true"  # 이 라벨을 가진 노드에서만 실행 
+          containers:
+            - name: air-pollution-prediction
+              image: harbor.dongango.com/aiclass4/tensorflow:2.12
+              command: ["python", "air_pollution_prediction.py"]
+              volumeMounts:
+                - name: script-volume
+                  mountPath: /app/air_pollution_prediction.py
+                  subPath: air_pollution_prediction.py
+                - name: config-volume
+                  mountPath: /app/db-config.json
+                  subPath: db-config.json
+              env:
+                - name: TZ
+                  value: Asia/Seoul
+              workingDir: /app
+          restartPolicy: OnFailure
+          volumes:
+            - name: script-volume
+              configMap:
+                name: air-pollution-prediction
+            - name: config-volume
+              configMap:
+                name: db-config
